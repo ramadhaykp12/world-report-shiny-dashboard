@@ -4,7 +4,8 @@ library(dplyr)
 library(plotly)
 library(readxl)
 
-child_world <- read.csv("path_to_child_world.csv")
+# Load the datasets
+child_world <- read_excel("children-per-woman-un (worldwide)(2).xlsx",sheet = "children-per-woman-un")
 fertility_idn <- read_excel("Total Fertility Rate By Province 2020 .xlsx", sheet = "Raw Data")
 fertility_edu <- read_excel("projections-of-the-number-of-children-per-woman-by-education-scenario.xlsx")
 fertility_edu  <- fertility_edu  %>%
@@ -12,11 +13,8 @@ fertility_edu  <- fertility_edu  %>%
 fertility_female_labor <- read_excel("fertility-and-female-labor-force-participation (worldwide).xlsx")
 fertility_contraception <- read_excel("fertility-vs-contraception (worldwide).xlsx")
 force_rate <- read_excel("proportion-of-labor-force-who-are-women.xlsx")
-mean_school_female <- read.csv("path_to_mean_school_female.csv")
+mean_school_female <- read_excel("mean-years-of-schooling-female.xlsx")
 
-# Filter data for the default selection
-selected_entity <- subset(child_world, Entity...1 == "World")
-selected_province <- subset(fertility_idn, Province == "Aceh")
 
 # Define UI for the application
 ui <- fluidPage(
@@ -215,9 +213,12 @@ server <- function(input, output) {
   
   output$linePlotFtEdu <- renderPlotly({
     ggplot(filtered_data(), aes(x = Year)) +
-      geom_line(aes(y = Fertility_Rate_FT), size = 1) +
-      geom_line(aes(y = Fertility_Rate_GET), size = 1) +
-      geom_line(aes(y = Fertility_Rate_CER), size = 1) +
+      geom_line(aes(y = Fertility_Rate_FT), colour = "red") +
+      geom_line(aes(y = Fertility_Rate_GET), colour = "blue") +
+      geom_line(aes(y = Fertility_Rate_CER), colour = "green") +
+      geom_point(aes(y = Fertility_Rate_FT), colour = "red") +
+      geom_point(aes(y = Fertility_Rate_GET), colour = "blue") +
+      geom_point(aes(y = Fertility_Rate_CER), colour = "green") +
       theme_minimal()
   })
   
@@ -245,8 +246,10 @@ server <- function(input, output) {
   
   output$linePlotFtContra <- renderPlotly({
     ggplot(filtered_ft(), aes(x = Year)) +
-      geom_line(aes(y = Fertility_rate), size = 1) +
-      geom_line(aes(y = Contraceptive_prevalence), size = 1) +
+      geom_line(aes(y = Fertility_rate), colour = "red") +
+      geom_line(aes(y = Contraceptive_prevalence),  colour = "blue") +
+      geom_point(aes(y = Fertility_rate), colour = "red") +
+      geom_point(aes(y = Contraceptive_prevalence),  colour = "blue") +
       theme_minimal()
   })
   
@@ -256,11 +259,13 @@ server <- function(input, output) {
   })
   
   output$linePlotFtFemale <- renderPlotly({
-    ggplot(filtered_female(), aes(x = Year)) +
-      geom_line(aes(y = Fertility_rate)) +
-      geom_line(aes(y = Labor_force_participation_rate)) +
-
+    p5 <- ggplot(filtered_female(), aes(x = Year)) +
+      geom_line(aes(y = Fertility_rate), colour = "red") +
+      geom_line(aes(y = Labor_force_participation_rate), colour = "blue") +
+      geom_point(aes(y = Fertility_rate), colour = "red") + 
+      geom_point(aes(y = Labor_force_participation_rate), colour = "blue") + 
       theme_minimal()
+    ggplotly(p5)
   })
 }
 
